@@ -1,0 +1,102 @@
+\documentclass{beamer}
+
+\mode<presentation> {
+\usetheme{CambridgeUS}
+}
+
+\usepackage{algorithmic}
+
+%-------------------------------------------------------------------------------
+% Title page
+%-------------------------------------------------------------------------------
+
+\title{Multi-step RL: Unifying Algorithm}
+
+\author{Kirill Bobyrev}
+
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Overview}
+\tableofcontents
+\end{frame}
+
+%-------------------------------------------------------------------------------
+% Slides
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+\section{Introduction}
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Important results}
+\end{frame}
+
+%-------------------------------------------------------------------------------
+\section{Algorithm}
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Algorithm description}
+\begin{algorithmic}
+  \STATE Initialize $S_0 \neq {terminal}$
+  \STATE Select $A_0$ according to $\pi(. | S_0)$
+  \STATE Store $S_0$, $A_0$, $Q(S_0, A_0)$
+  \FOR{$t = 0, \ldots, T + n - 1$}
+    \IF{$t < T$}
+      \STATE Take Action $A_t$, observe $R$ and store $S_{t + 1}$
+    \ENDIF
+  \ENDFOR
+\end{algorithmic}
+\end{frame}
+
+
+
+%-------------------------------------------------------------------------------
+\section{Conclusion}
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Synopsis}
+\begin{itemize}
+    \item $Q(\sigma)$ unifies TD Control Algorithms: SARSA, Q-Learning,
+          Expected SARSA
+    \item $\sigma$ is used to control
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle<presentation>{References}
+
+  \begin{thebibliography}{10}
+
+  \beamertemplatebookbibitems
+
+  \beamertemplatearticlebibitems
+
+  \bibitem{QSigma}
+    Kristopher De Asis, J. Fernando Hernandez-Garcia, G. Zacharias Holland,
+    Richard S. Sutton.
+    \newblock {\em Multi-step Reinforcement Learning: A Unifying Algorithm}.
+    \newblock arXiv, 3 Mar 2017.
+
+  \end{thebibliography}
+\end{frame}
+
+\end{document}
+
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+\Huge{\centerline{The End}}
+\huge{\centerline{Questions?}}
+\end{frame}
+
+%-------------------------------------------------------------------------------
