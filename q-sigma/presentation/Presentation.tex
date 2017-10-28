@@ -5,9 +5,10 @@
 }
 
 \usepackage{algorithmic}
+\usepackage{hyperref}
 
 %-------------------------------------------------------------------------------
-% Title page
+% Presentation meta
 %-------------------------------------------------------------------------------
 
 \title{Multi-step RL: Unifying Algorithm}
@@ -57,8 +58,6 @@
 \end{algorithmic}
 \end{frame}
 
-
-
 %-------------------------------------------------------------------------------
 \section{Conclusion}
 %-------------------------------------------------------------------------------
@@ -66,9 +65,9 @@
 \begin{frame}
 \frametitle{Synopsis}
 \begin{itemize}
-    \item $Q(\sigma)$ unifies TD Control Algorithms: SARSA, Q-Learning,
-          Expected SARSA
-    \item $\sigma$ is used to control
+    \item $Q(\sigma)$ unifies Sarsa and Tree-backup
+    \item $Q(\sigma)|_{\sigma=0}$ is Tree-backup
+    \item $Q(\sigma)|_{\sigma=1}$ is Sarsa
 \end{itemize}
 \end{frame}
 
@@ -84,19 +83,19 @@
   \bibitem{QSigma}
     Kristopher De Asis, J. Fernando Hernandez-Garcia, G. Zacharias Holland,
     Richard S. Sutton.
-    \newblock {\em Multi-step Reinforcement Learning: A Unifying Algorithm}.
+    \newblock {\href{https://arxiv.org/abs/1703.01327}{\em Multi-step
+      Reinforcement Learning: A Unifying Algorithm}}.
     \newblock arXiv, 3 Mar 2017.
 
   \end{thebibliography}
 \end{frame}
 
-\end{document}
-
 %-------------------------------------------------------------------------------
 
 \begin{frame}
 \Huge{\centerline{The End}}
-\huge{\centerline{Questions?}}
 \end{frame}
 
 %-------------------------------------------------------------------------------
+
+\end{document}
