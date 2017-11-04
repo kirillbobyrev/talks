@@ -1,6 +1,7 @@
 '''
 This file contains implementation of 19-State Random Walk and Stochastic Windy
-Gridworld environments
+Gridworld environments used in Multi-step Reinforcement Learning: A Unifying
+Algorithm (https://arxiv.org/abs/1703.01327) paper.
 '''
 
 import gym
@@ -10,9 +11,7 @@ import numpy
 
 class RandomWalk(gym.Env):
     '''
-    This is a replication of n-State Random Walk (originally n=19) environment
-    described in Multi-step Reinforcement Learning: A Unifying Algorithm
-    (https://arxiv.org/abs/1703.01327) paper.
+    Replication of n-State Random Walk (originally n=19) environment.
     '''
     def __new__(self, n_states=19):
         action_space = gym.spaces.Discrete(2)
@@ -34,8 +33,8 @@ class RandomWalk(gym.Env):
 
 class StochasticWindyGridworld(gym.Env):
     '''
-    Tabular navigation task in standard gridworld which is described in (Sutton
-    & Barto, Chapter 2017 2017,).
+    Slightly modified tabular navigation task in standard gridworld which is
+    described in (Sutton & Barto, Chapter , 2017).
     '''
     def __new__(self, n_states=19):
         width = 10

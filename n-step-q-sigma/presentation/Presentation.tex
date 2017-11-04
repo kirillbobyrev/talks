@@ -37,7 +37,23 @@
 %-------------------------------------------------------------------------------
 
 \begin{frame}
-\frametitle{Important results}
+  \frametitle{Results}
+\end{frame}
+
+%-------------------------------------------------------------------------------
+\section{From Monte Carlo & one-step TD to multi-step Bootstrapping}
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+  \frametitle{Monte Carlo methods}
+\end{frame}
+
+\begin{frame}
+  \frametitle{One-step TD methods}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$n$-step TD methods}
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -45,17 +61,21 @@
 %-------------------------------------------------------------------------------
 
 \begin{frame}
-\frametitle{Algorithm description}
-\begin{algorithmic}
-  \STATE Initialize $S_0 \neq {terminal}$
-  \STATE Select $A_0$ according to $\pi(. | S_0)$
-  \STATE Store $S_0$, $A_0$, $Q(S_0, A_0)$
-  \FOR{$t = 0, \ldots, T + n - 1$}
-    \IF{$t < T$}
-      \STATE Take Action $A_t$, observe $R$ and store $S_{t + 1}$
-    \ENDIF
-  \ENDFOR
-\end{algorithmic}
+  \frametitle{$Q(\sigma)$ algorithm}
+  \begin{algorithmic}
+    \STATE Initialize $S_0 \neq {terminal}$
+    \STATE Select $A_0$ according to $\pi(. | S_0)$
+    \STATE Store $S_0$, $A_0$, $Q(S_0, A_0)$
+    \FOR{$t = 0, \ldots, T + n - 1$}
+      \IF{$t < T$}
+        \STATE Take Action $A_t$, observe $R$ and store $S_{t + 1}$
+      \ENDIF
+    \ENDFOR
+  \end{algorithmic}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Intuition & Examples}
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -65,9 +85,9 @@
 \begin{frame}
 \frametitle{Synopsis}
 \begin{itemize}
-    \item $Q(\sigma)$ unifies Sarsa and Tree-backup
+    \item $Q(\sigma)$ unifies $n$-step Sarsa and Tree-backup
     \item $Q(\sigma)|_{\sigma=0}$ is Tree-backup
-    \item $Q(\sigma)|_{\sigma=1}$ is Sarsa
+    \item $Q(\sigma)|_{\sigma=1}$ is $n$-step Sarsa
 \end{itemize}
 \end{frame}
 
@@ -86,6 +106,11 @@
     \newblock {\href{https://arxiv.org/abs/1703.01327}{\em Multi-step
       Reinforcement Learning: A Unifying Algorithm}}.
     \newblock arXiv, 3 Mar 2017.
+
+  \bibitem{RLBook} Richard S. Sutton, Andrew G. Barto.  \newblock
+    {\href{http://incompleteideas.net/sutton/book/the-book-2nd.html}{\em
+      Reinforcement Learning: An Introduction}}.
+    \newblock MIT Press, Cambridge, MA, 19 Jun 2017 Draft.
 
   \end{thebibliography}
 \end{frame}
