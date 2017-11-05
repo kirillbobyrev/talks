@@ -20,12 +20,12 @@
 \begin{document}
 
 \begin{frame}
-\titlepage
+  \titlepage
 \end{frame}
 
 \begin{frame}
-\frametitle{Plan}
-\tableofcontents
+  \frametitle{Plan}
+  \tableofcontents
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -57,11 +57,15 @@
 \end{frame}
 
 %-------------------------------------------------------------------------------
-\section{Algorithm}
+\section{$Q(\sigma)$ algorithm}
 %-------------------------------------------------------------------------------
 
 \begin{frame}
-  \frametitle{$Q(\sigma)$ algorithm}
+  \frametitle{Overview}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algorithm description}
   \begin{algorithmic}
     \STATE Initialize $S_0 \neq {terminal}$
     \STATE Select $A_0$ according to $\pi(. | S_0)$
@@ -78,17 +82,22 @@
   \frametitle{Intuition and Examples}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Choosing $\sigma$}
+\end{frame}
+
 %-------------------------------------------------------------------------------
 \section{Conclusion}
 %-------------------------------------------------------------------------------
 
 \begin{frame}
-\frametitle{Synopsis}
-\begin{itemize}
+  \frametitle{Synopsis}
+  \begin{itemize}
+    \item $n$-step methods are derived from both MC and TD($\lambda$)
     \item $Q(\sigma)$ unifies $n$-step Sarsa and Tree-backup
     \item $Q(\sigma)|_{\sigma=0}$ is Tree-backup
     \item $Q(\sigma)|_{\sigma=1}$ is $n$-step Sarsa
-\end{itemize}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
