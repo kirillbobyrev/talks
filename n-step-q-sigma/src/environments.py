@@ -41,12 +41,13 @@ class StochasticWindyGridworld(gym.Env):
     height = 7
     action_space = gym.spaces.Discrete(4)
     observation_space = gym.spaces.Discrete(width * height)
-    reward_range = (-numpy.inf, 1)
-    start_state = 0# coordinates_to_observation((0, 3))
-    goal_state = 0# coordinates_to_observation((7, 3))
+    reward_range = (-numpy.inf, 0)
 
-    def __init__(self):
-        print('OK')
+    def __init__(self, random_step_probability=0.1):
+        self.start_state = self.coordinates_to_observation((0, 3))
+        self.goal_state = self.coordinates_to_observation((7, 3))
+        self.state = self.start_state
+        self.random_step_probability = random_step_probability
 
     def _step(self, action):
         pass
@@ -55,7 +56,17 @@ class StochasticWindyGridworld(gym.Env):
         self.state = self.start_state
 
     def _render(self, mode, close):
-        pass
+        for j in range(self.height):
+            for i in range(self.width):
+                symbol = 'O'
+                if self.coordinates_to_observation((i, j)) == self.state:
+                    symbol = 'X'
+                elif self.coordinates_to_observation((i, j)) == self.start_state:
+                    symbol = 'S'
+                elif self.coordinates_to_observation((i, j)) == self.goal_state:
+                    symbol = 'G'
+                print('{} '.format(symbol), end='')
+            print()
 
     def _seed(self, seed=None):
         pass
