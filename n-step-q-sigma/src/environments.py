@@ -2,6 +2,8 @@
 This file contains implementation of Stochastic Windy Gridworld
 environments used in Multi-step Reinforcement Learning: A Unifying Algorithm
 (https://arxiv.org/abs/1703.01327) paper.
+
+TODO: Add more documentation.
 '''
 
 import gym
@@ -12,7 +14,7 @@ import numpy
 class StochasticWindyGridworld(gym.Env):
     '''
     Slightly modified tabular navigation task in standard gridworld which is
-    described in (Sutton & Barto, Chapter 6.5, 2017).
+    described in (Sutton & Barto, Chapter 6.4, Example 6.5, 2017).
 
     Stochastic Windy Gridworld is a tabular navigation taks with Start and Goal
     states (donoted by S and G respectively) and four possible moves: right,
@@ -50,7 +52,16 @@ class StochasticWindyGridworld(gym.Env):
         self.random_step_probability = random_step_probability
 
     def _step(self, action):
-        pass
+        mapping = [(1, 0), (-1, 0), (0, -1), (0, 1)]
+        coordinates = self.observation_to_cordinates(self.state)
+        if numpy.random.uniform() < self.random_step_probability:
+            # Assign movement vector to a random vector resulting in adjacent
+            # state.
+            pass
+        coordinates += mapping[action]
+        # TODO: Finish implementation. Compare resulting state to the Goal,
+        # move the agent back to the world (if needed), generate reward and
+        # determine whether the episode is over.
 
     def _reset(self):
         self.state = self.start_state
@@ -69,7 +80,11 @@ class StochasticWindyGridworld(gym.Env):
             print()
 
     def _seed(self, seed=None):
-        pass
+        numpy.random.seed(seed)
 
     def coordinates_to_observation(self, coordinates):
         return coordinates[0] + coordinates[1] * self.width
+
+    def observation_to_cordinates(self, coordinates):
+        return numpy.array(self.observation % self.width,
+                           self.observation // self.width)

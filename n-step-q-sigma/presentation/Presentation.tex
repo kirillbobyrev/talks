@@ -6,6 +6,10 @@
 
 \usepackage{algorithmic}
 \usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\graphicspath{{images/}}
 
 %-------------------------------------------------------------------------------
 % Presentation meta
@@ -38,33 +42,108 @@
 
 \begin{frame}
   \frametitle{Results}
+  % TODO: Outline main properties of the Q(\sigma) algorithm.
 \end{frame}
 
 %-------------------------------------------------------------------------------
 \section{From MC and one-step TD to multi-step Bootstrapping}
 %-------------------------------------------------------------------------------
 
+%-------------------------------------------------------------------------------
+\subsection{Extreme cases: MC and TD}
+%-------------------------------------------------------------------------------
+
 \begin{frame}
   \frametitle{Monte Carlo methods}
+  \begin{itemize}
+    \item Sample many episodes
+    \item MC every-visit backup: $V(S_t) \leftarrow V(S_t) +
+      \alpha[G_t - V(S_t)]$
+    \item Does not need environment model
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{One-step TD methods}
+  \frametitle{TD methods}
+  \begin{itemize}
+    \item Combines Monte Carlo and Dynamic Programming
+    \item Does not need environment model
+    \item Uses bootstrapping for updates
+    \item Sample many steps instead of methods
+    \item One-step TD backup: $V(S_t) \leftarrow V(S_t) +
+      \alpha[R_t - \gamma V(S_t)]$
+  \end{itemize}
+\end{frame}
+
+%-------------------------------------------------------------------------------
+\subsection{$n$-step methods}
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+  \frametitle{From 1-step to $n$-step}
+  Define multi-step return for TD: $G_{t : t + n} \overset{\cdot}{=} R_{t + 1} +
+    \gamma R_{t + 2} + \ldots + \gamma^{n - 1} R_{t + n} +
+    \gamma^n V_{t + n - 1}(S_{t + n})$
+
+  Using this multi-step return:
+  \begin{itemize}
+    \item Monte Carlo backup uses $G_{t : T}$
+    \item One-step TD backup uses $G_{t : t + 1}$
+  \end{itemize}
+
+  $n$-step TD: $V_{t + n}(S_t) \overset{\cdot}{=} V_{t + n - 1}(S_t) +
+    \alpha [G_{t : t + n} - V_{t + n - 1}(S_t)]$
+
+  $Q(\sigma)$ is based on $n$-step Sarsa and $n$-step Tree Backup
 \end{frame}
 
 \begin{frame}
-  \frametitle{Monte Carlo versus Temporal Difference}
-  \begin{minipage}[t]{0.48\linewidth}
-    left part
-  \end{minipage}
-  \hfill\vline\hfill
-  \begin{minipage}[t]{0.48\linewidth}
-    right part
-  \end{minipage}
+  \frametitle{Backups: From one-step TD to MC}
+  \begin{figure}
+    \centering
+    \includegraphics[height=0.7 \textheight]{one-step-to-multi-step}
+  \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{$n$-step TD methods}
+  \frametitle{$n$-step Sarsa}
+  % TODO: Finish brief introduction of Sarsa.
+  $$\delta^{S}_t = R_{t + 1} + \gamma Q(S_{t + 1}, A_{t + 1}) - Q(S_t, A_t)$$
+  $$\delta^{ES}_t \overset{\cdot}{=} R_{t + 1} +
+    \gamma \sum_{a} \pi(a | S_{t + 1}) Q_t(S_{t + 1}, a) - Q_{t - 1}(S_t, A_t)$$
+\end{frame}
+
+\begin{frame}
+  \frametitle{$n$-step Sarsa and Expected Sarsa backup mechanisms}
+  % TODO: Add simple intuition about what happens at each backup step.
+  \begin{figure}
+    \centering
+    \includegraphics[height=0.7 \textheight]{sarsa-backup}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tree Backup}
+  Tree BackupMulti-step generalization of Expected Sarsa
+  $$G_{t : t + 1} \overset{\cdot}{=} R_{t + 1} +
+    \gamma \sum_{a} \pi(a | S_{t + 1}) Q_t(S_{t + 1}, a) = \delta^{ES}_t
+    + Q_{t - 1}(S_{t + 1}, a)$$
+  Hence $n$-step return of Tree Backup is a sum of TD errors:
+  $$G_{t : t + n} \overset{\cdot}{=} Q_{t -1}(S_t, A_t) +
+    \sum_{k = t}^{\min{t + n - 1, T - 1}} \delta'_k \prod_{i = t + 1}^k \gamma
+    \pi(A_i | S_i)$$
+  Taking update rule from $n$-step Sarsa:
+  $$Q_{t + n}(S_t, A_t) \overset{\cdot}{=} Q_{t + n - 1}(S_t, A_t) +
+    \alpha[G_{t : t + n} - Q_{t + n -1}(S_t, A_t)]$$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tree Backup backup mechanism}
+  % TODO: Add simple intuition about what happens at each backup step.
+  \begin{figure}
+    \centering
+    \includegraphics[height=0.7 \textheight]{tree-backup}
+  \end{figure}
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -72,11 +151,58 @@
 %-------------------------------------------------------------------------------
 
 \begin{frame}
-  \frametitle{Overview}
+  \frametitle{Relation to other algorithms}
+  Two families of multi-step algorithms:
+  \begin{itemize}
+    \item Algorithms that backup their actions and samples (Sarsa and
+      Expected Sarsa)
+    \item Algorithms that consider an expectation over all actions in their
+      backup (Expected Sarsa and Tree Backup)
+  \end{itemize}
+  These can be unified by introducing a new parameter $\sigma \in [0, 1]$, which
+  controls the degree of sampling at each step of the backup through a weighted
+  average of both sampling and expectation
+\end{frame}
+
+\begin{frame}
+  \frametitle{Details}
+  Error modification:
+  \begin{align*}
+    \delta_t^{\sigma}
+      &= \sigma_{t+1} \delta_{t}^S + (1 - \sigma_{t + 1}) \delta_t^{ES} \\
+      &= R_{t + 1} + \gamma [\sigma_{t + 1} Q_t(S_{t + 1}, A_{t + 1}) +
+                          (1 - \sigma_{t+ 1}) V_{t + 1}] - Q_{t - 1}(S_t, A_t)
+  \end{align*}
+  Resuling return:
+  $$G_{t}^{(n)} = Q_{t - 1}(S_t, A_t) + \sum_{k = t}^{\min{t + n - 1, T- 1}}
+    \delta_k^{\sigma} \prod_{i = t + 1}^{k} = \gamma
+    [(1 - \sigma_i) \pi (A_i | S) + \sigma_i]$$
+  Importance sampling for off-policy learning:
+  $$\rho_{t + 1}^{t + n} = \prod_{k = t + 1}^{\min{t + n - 1, T - 1}}
+    (\sigma_k \frac{\pi(A_k | S_k)}{\mu(A_k | S_k)} + 1 - \sigma_k)$$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Backup comparisons}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.7 \textwidth]{all-multi-step-backups}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$\sigma$ choosing strategies}
+  \begin{itemize}
+    \item Constant $\sigma = C$
+    \item Altering $\sigma(t) = 1, 0, 1, 0, \ldots = [t \mod 2 = 0]$
+    \item Random $\sigma(t) \sim \mathcal{U}[0, 1]$
+    \item Decreasing or increasing over $t$ (between $0$ and $1$)
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Algorithm description}
+  % TODO: Finish formal algorithm description, make it brief.
   \begin{algorithmic}
     \STATE Initialize $S_0 \neq {terminal}$
     \STATE Select $A_0$ according to $\pi(. | S_0)$
@@ -89,24 +215,40 @@
   \end{algorithmic}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Intuition and Examples}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Choosing $\sigma$}
-\end{frame}
-
 %-------------------------------------------------------------------------------
 \section{Experiments}
 %-------------------------------------------------------------------------------
 
 \begin{frame}
   \frametitle{Stochastic Windy Gridworld Environment}
+  \begin{figure}
+    \centering
+    \begin{tabular}{ | c | c | c | c | c | c | c | c | c | c | }
+      \hline
+      o & o & o & o & o & o & o & o & o & o\\ \hline
+      o & o & o & o & o & o & o & o & o & o\\ \hline
+      o & o & o & o & o & o & o & o & o & o\\ \hline
+      S & o & o & o & o & o & o & G & o & o\\ \hline
+      o & o & o & o & o & o & o & o & o & o\\ \hline
+      o & o & o & o & o & o & o & o & o & o\\ \hline
+      o & o & o & o & o & o & o & o & o & o\\ \hline
+      0 & 0 & 0 & 1 & 1 & 1 & 2 & 2 & 1 & 0\\ \hline
+    \end{tabular}
+  \end{figure}
+  \begin{itemize}
+    \item Tabular navigation environment, agent is moved by upward "wind" by $x$
+      cells specified below each corresponding column at the end of its turn
+    \item Environment gives reward of $-1$ after each steap
+    \item Agent returns to the closest valid state upon exiting the world
+    \item Stochastic modification: agent ends up in one of 8 adjacent states
+      with $p = 0.1$
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Comparing Sarsa, Tree-backup, $Q(0.5)$ and dynamic $\lambda$}
+  \frametitle{Comparing Sarsa, Tree Backup, $Q(0.5)$ and dynamic $\sigma$}
+  % TODO: Obtain plot using the implementations and Stochastich Windy Gridworld
+  % environment and insert here.
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -116,9 +258,9 @@
 \begin{frame}
   \frametitle{Synopsis}
   \begin{itemize}
-    \item $n$-step methods are derived from both MC and TD($\lambda$)
+    \item $n$-step algorithms are derived from MC and one-step TD methods
     \item $Q(\sigma)$ unifies $n$-step Sarsa and Tree-backup
-    \item $Q(\sigma)|_{\sigma=0}$ is Tree-backup
+    \item $Q(\sigma)|_{\sigma=0}$ is Tree Backup
     \item $Q(\sigma)|_{\sigma=1}$ is $n$-step Sarsa
   \end{itemize}
 \end{frame}
@@ -151,7 +293,12 @@
 %-------------------------------------------------------------------------------
 
 \begin{frame}
-\Huge{\centerline{The End}}
+  \frametitle{Materials}
+  \begin{center}
+  Presentation, code and other materials are availible in the GitHub
+  \href{https://github.com/omtcyfz/talks/tree/master/n-step-q-sigma}{
+    \textcolor{blue}{repository}}
+  \end{center}
 \end{frame}
 
 %-------------------------------------------------------------------------------
