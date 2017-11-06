@@ -1,6 +1,6 @@
 '''
 This file contains implementation of Stochastic Windy Gridworld
-environments used in Multi-step Reinforcement Learning: A Unifying Algorithm
+environment used in Multi-step Reinforcement Learning: A Unifying Algorithm
 (https://arxiv.org/abs/1703.01327) paper.
 
 TODO: Add more documentation.
@@ -52,6 +52,7 @@ class StochasticWindyGridworld(gym.Env):
         self.random_step_probability = random_step_probability
 
     def _step(self, action):
+        assert(self.state != self.goal_state)
         mapping = [(1, 0), (-1, 0), (0, -1), (0, 1)]
         coordinates = self.observation_to_cordinates(self.state)
         if numpy.random.uniform() < self.random_step_probability:
@@ -62,6 +63,17 @@ class StochasticWindyGridworld(gym.Env):
         # TODO: Finish implementation. Compare resulting state to the Goal,
         # move the agent back to the world (if needed), generate reward and
         # determine whether the episode is over.
+        coordinates = (min(coordinates[0], self.width - 1),
+                       min(coordinates[1], self.height - 1))
+        coordinates = (max(coordinates[0], 0),
+                       max(coordinates[1], 0))
+        self.state = self.coordinates_to_observation(coordinates)
+        done = (self.state == self.goal_state)
+        reward = -1
+        if done:
+            reward = 0
+        info = {}
+        return self.state, reward, done, info
 
     def _reset(self):
         self.state = self.start_state

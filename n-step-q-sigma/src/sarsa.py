@@ -1,3 +1,0 @@
-'''
-Implements Sarsa algorithm.
-'''

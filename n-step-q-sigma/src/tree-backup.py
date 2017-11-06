@@ -1,3 +1,0 @@
-'''
-Implements Tree-backup algorithm.
-'''
