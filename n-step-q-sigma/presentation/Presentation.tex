@@ -45,6 +45,15 @@
 \begin{frame}
   \frametitle{Results}
   % TODO: Outline main properties of the Q(\sigma) algorithm.
+  Introducing algorithm $Q(\sigma)$ with following properties
+  \begin{itemize}
+    \item Model-free
+    \item Can be trained both off- and on-policy
+    \item Uses $n$-step backup rule
+    \item Generalizes a huge number of existing algorithms while subsuming them
+      as special cases
+    \item Performs better given a reasonable choice of hyperparameter $\sigma$
+  \end{itemize}
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -183,9 +192,8 @@
     \item Algorithms that consider an expectation over all actions in their
       backup (Expected Sarsa and Tree Backup)
   \end{itemize}
-  These can be unified by introducing a new parameter $\sigma \in [0, 1]$, which
-  controls the degree of sampling at each step of the backup through a weighted
-  average of both sampling and expectation
+  New parameter $\sigma \in [0, 1]$, which controls the degree of sampling at
+  each step of the backup, unifies both families
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -201,9 +209,9 @@
       &= R_{t + 1} + \gamma [\sigma_{t + 1} Q_t(S_{t + 1}, A_{t + 1}) +
                           (1 - \sigma_{t+ 1}) V_{t + 1}] - Q_{t - 1}(S_t, A_t)
   \end{align*}
-  Resuling return:
+  Resulting return:
   $$G_{t}^{(n)} = Q_{t - 1}(S_t, A_t) + \sum_{k = t}^{\min{t + n - 1, T- 1}}
-    \delta_k^{\sigma} \prod_{i = t + 1}^{k} = \gamma
+    \delta_k^{\sigma} \prod_{i = t + 1}^{k} \gamma
     [(1 - \sigma_i) \pi (A_i | S) + \sigma_i]$$
 \end{frame}
 
@@ -296,7 +304,7 @@
   \begin{itemize}
     \item Tabular navigation environment, agent is moved by upward "wind" by $x$
       cells specified below each corresponding column at the end of its turn
-    \item Environment gives reward of $-1$ after each steap
+    \item Environment gives reward of $-1$ after each step
     \item Agent returns to the closest valid state upon exiting the world
     \item Stochastic modification: agent ends up in one of 8 adjacent states
       with $p = 0.1$
@@ -305,7 +313,7 @@
 
 \begin{frame}
   \frametitle{Comparing Sarsa, Tree Backup, $Q(0.5)$ and dynamic $\sigma$}
-  % TODO: Obtain plot using the implementations and Stochastich Windy Gridworld
+  % TODO: Obtain plot using the implementations and Stochastic Windy Gridworld
   % environment and insert here.
 \end{frame}
 
@@ -353,7 +361,7 @@
 \begin{frame}
   \frametitle{Materials}
   \begin{center}
-  Presentation, code and other materials are availible in the GitHub
+  Presentation, code and other materials are available in the GitHub
   \href{https://github.com/omtcyfz/talks/tree/master/n-step-q-sigma}{
     \textcolor{blue}{repository}}
   \end{center}
