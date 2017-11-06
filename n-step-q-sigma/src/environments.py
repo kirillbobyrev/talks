@@ -58,6 +58,7 @@ class StochasticWindyGridworld(gym.Env):
         self.random_step_probability = random_step_probability
 
     def _step(self, action):
+        # TODO: Use upwards movements.
         assert(not numpy.array_equal(self.state, self.goal_state))
         mapping = [(1, 0), (-1, 0), (0, -1), (0, 1)]
         movement = mapping[action]
@@ -69,9 +70,16 @@ class StochasticWindyGridworld(gym.Env):
             random_vector_index = numpy.random.choice(len(random_movement))
             movement = random_movement[random_vector_index]
         self.state += movement
+        '''
+        TODO: Deal with this stuff later.
         self.state = numpy.amin((self.state, (self.width - 1, self.height - 1)),
                                 axis=0)
         self.state = numpy.amax((self.state, (0, 0)), axis=0)
+        '''
+        self.state[0] = min(self.width - 1, self.state[0])
+        self.state[1] = min(self.height - 1, self.state[1])
+        self.state[0] = max(0, self.state[0])
+        self.state[1] = max(0, self.state[1])
         done = numpy.array_equal(self.state, self.goal_state)
         reward = -1
         if done:
@@ -81,6 +89,7 @@ class StochasticWindyGridworld(gym.Env):
 
     def _reset(self):
         self.state = self.start_state.copy()
+        return self.state
 
     def _render(self, mode='human', close=False):
         for j in range(self.height):
