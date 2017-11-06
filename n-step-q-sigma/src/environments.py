@@ -42,33 +42,37 @@ class StochasticWindyGridworld(gym.Env):
     width = 10
     height = 7
     action_space = gym.spaces.Discrete(4)
-    observation_space = gym.spaces.Discrete(width * height)
+    observation_space = gym.spaces.MultiDiscrete([[0, width], [0, height]])
     reward_range = (-numpy.inf, 0)
 
+    RIGHT, LEFT, UP, DOWN = (0, 1, 2, 3)
+
+    metadata = {
+        'render.modes': ['human'],
+    }
+
     def __init__(self, random_step_probability=0.1):
-        self.start_state = self.coordinates_to_observation((0, 3))
-        self.goal_state = self.coordinates_to_observation((7, 3))
-        self.state = self.start_state
+        self.start_state = numpy.array((0, 3), dtype=numpy.int8)
+        self.goal_state = numpy.array((7, 3), dtype=numpy.int8)
+        self.state = self.start_state.copy()
         self.random_step_probability = random_step_probability
 
     def _step(self, action):
-        assert(self.state != self.goal_state)
+        assert(not numpy.array_equal(self.state, self.goal_state))
         mapping = [(1, 0), (-1, 0), (0, -1), (0, 1)]
-        coordinates = self.observation_to_cordinates(self.state)
+        movement = mapping[action]
         if numpy.random.uniform() < self.random_step_probability:
             # Assign movement vector to a random vector resulting in adjacent
             # state.
-            pass
-        coordinates += mapping[action]
-        # TODO: Finish implementation. Compare resulting state to the Goal,
-        # move the agent back to the world (if needed), generate reward and
-        # determine whether the episode is over.
-        coordinates = (min(coordinates[0], self.width - 1),
-                       min(coordinates[1], self.height - 1))
-        coordinates = (max(coordinates[0], 0),
-                       max(coordinates[1], 0))
-        self.state = self.coordinates_to_observation(coordinates)
-        done = (self.state == self.goal_state)
+            random_movement = [(1, 0), (-1,  0), (0, -1), (0,  1),
+                               (1, 1), (-1, -1), (1, -1), (-1, 1)]
+            random_vector_index = numpy.random.choice(len(random_movement))
+            movement = random_movement[random_vector_index]
+        self.state += movement
+        self.state = numpy.amin((self.state, (self.width - 1, self.height - 1)),
+                                axis=0)
+        self.state = numpy.amax((self.state, (0, 0)), axis=0)
+        done = numpy.array_equal(self.state, self.goal_state)
         reward = -1
         if done:
             reward = 0
@@ -76,27 +80,21 @@ class StochasticWindyGridworld(gym.Env):
         return self.state, reward, done, info
 
     def _reset(self):
-        self.state = self.start_state
+        self.state = self.start_state.copy()
 
-    def _render(self, mode, close):
+    def _render(self, mode='human', close=False):
         for j in range(self.height):
             for i in range(self.width):
-                symbol = 'O'
-                if self.coordinates_to_observation((i, j)) == self.state:
+                symbol = 'o'
+                if numpy.array_equal((i, j), self.state):
                     symbol = 'X'
-                elif self.coordinates_to_observation((i, j)) == self.start_state:
+                elif numpy.array_equal((i, j), self.start_state):
                     symbol = 'S'
-                elif self.coordinates_to_observation((i, j)) == self.goal_state:
+                if numpy.array_equal((i, j), self.goal_state):
                     symbol = 'G'
                 print('{} '.format(symbol), end='')
             print()
+        print()
 
     def _seed(self, seed=None):
         numpy.random.seed(seed)
-
-    def coordinates_to_observation(self, coordinates):
-        return coordinates[0] + coordinates[1] * self.width
-
-    def observation_to_cordinates(self, coordinates):
-        return numpy.array(self.observation % self.width,
-                           self.observation // self.width)

@@ -44,7 +44,6 @@
 
 \begin{frame}
   \frametitle{Results}
-  % TODO: Outline main properties of the Q(\sigma) algorithm.
   Introducing algorithm $Q(\sigma)$ with following properties
   \begin{itemize}
     \item Model-free
@@ -144,9 +143,10 @@
     \gamma \sum_{a} \pi(a | S_{t + 1}) Q_t(S_{t + 1}, a) = \delta^{ES}_t
     + Q_{t - 1}(S_{t + 1}, a)$$
   Hence $n$-step return of Tree Backup is a sum of TD errors:
+  % TODO: Check that the following error is indeed \delta^ES.
   $$G_{t : t + n} \overset{\cdot}{=} Q_{t -1}(S_t, A_t) +
-    \sum_{k = t}^{\min{t + n - 1, T - 1}} \delta'_k \prod_{i = t + 1}^k \gamma
-    \pi(A_i | S_i)$$
+    \sum_{k = t}^{\min{t + n - 1, T - 1}} \delta_k^{ES} \prod_{i = t + 1}^k
+    \gamma \pi(A_i | S_i)$$
   Taking update rule from $n$-step Sarsa:
   $$Q_{t + n}(S_t, A_t) \overset{\cdot}{=} Q_{t + n - 1}(S_t, A_t) +
     \alpha[G_{t : t + n} - Q_{t + n -1}(S_t, A_t)]$$
@@ -323,6 +323,9 @@
 
 \begin{frame}
   \frametitle{Synopsis}
+  % TODO: Do a better job at summarizing the results: repeat what has been said
+  % today, what important results and intuition is obtained through the sequence
+  % of transitions, etc.
   \begin{itemize}
     \item $n$-step algorithms are derived from MC and one-step TD methods
     \item $Q(\sigma)$ unifies $n$-step Sarsa and Tree-backup
