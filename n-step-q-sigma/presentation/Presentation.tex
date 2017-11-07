@@ -121,10 +121,35 @@
 
 \begin{frame}
   \frametitle{$n$-step Sarsa}
-  % TODO: Finish brief introduction of Sarsa.
+  Transition from one-step Sarsa to $n$-step version is straightforward:
+  $$G_{t : t + n} \overset{\cdot}{=} R_{t + 1} + \gamma R_{t + 2} + \ldots +
+    \gamma^{n -1} R_{t + n} + \gamma^n Q_{t + n - 1}(S_{t + n}, A_{t + n})$$
+  The update rule is transformed as follows:
+  $$Q_{t + n}(S_t, A_t) \overset{\cdot}{=} Q_{t + n - 1}(S_t, A_t) +
+    \alpha [G_{t : t + n} - Q_{t + n - 1}(S_t, A_t)$$
+  Generalizing Expected Sarsa would modify the error definition by a small
+  margin:
   $$\delta^{S}_t = R_{t + 1} + \gamma Q(S_{t + 1}, A_{t + 1}) - Q(S_t, A_t)$$
   $$\delta^{ES}_t \overset{\cdot}{=} R_{t + 1} +
     \gamma \sum_{a} \pi(a | S_{t + 1}) Q_t(S_{t + 1}, a) - Q_{t - 1}(S_t, A_t)$$
+  Therefore we obtain Expected Sarsa return:
+  $$G_{t : t + n} \overset{\cdot}{=} R_{t + 1} + \ldots +
+    \gamma^{n -1} R_{t + n} + \gamma^n \sum_{a} \pi(a | S_{t + n})
+      Q_{t + n - 1}(S_{t + n}, A_{t + n})$$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sarsa off-policy learning}
+  \begin{itemize}
+    \item $\pi$ is greedy policy for the current action-value-function estimate
+    \item $\mu$ is exploratory policy, perhaps $\varepsilon$-greedy
+  \end{itemize}
+  Goal: learn value function for $\pi$ while following $\mu$
+  Solution: use importance sampling ratio and modify update rule
+  $$\rho_{t : t + n} = \prod_{k = t}^{\min{t + n, T - 1}}
+    \frac{\pi(A_k | S_k)}{\mu(A_k | S_k)}$$
+  $$Q_{t + n}(S_t, A_t) \overset{\cdot}{=} Q_{t + n - 1}(S_t, A_t) +
+    \alpha \rho_{t + 1 : t + n - 1} [G_{t : t + n} - Q_{t + n - 1}(S_t, A_t)]$$
 \end{frame}
 
 \begin{frame}
@@ -137,8 +162,8 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Tree Backup}
-  Tree Backup is the multi-step generalization of Expected Sarsa backup
+  \frametitle{Tree Backup: off-policy without Importance Sampling}
+  Tree Backup is the multi-step generalization of Expected Sarsa:
   $$G_{t : t + 1} \overset{\cdot}{=} R_{t + 1} +
     \gamma \sum_{a} \pi(a | S_{t + 1}) Q_t(S_{t + 1}, a) = \delta^{ES}_t
     + Q_{t - 1}(S_{t + 1}, a)$$
@@ -153,26 +178,12 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Tree Backup backup mechanism}
+  \frametitle{Tree Backup mechanism}
   % TODO: Add simple intuition about what happens at each backup step.
   \begin{figure}
     \centering
     \includegraphics[height=0.7 \textheight]{tree-backup}
   \end{figure}
-\end{frame}
-
-%-------------------------------------------------------------------------------
-\subsection{Off-policy learning}
-%-------------------------------------------------------------------------------
-
-\begin{frame}
-  \frametitle{Sarsa and Tree Backup off-policy learning}
-  % TODO: Describe off-policy learning for Sarsa and Tree Backup.
-    \begin{center}
-    \begin{tabular}{ c | c }
-      \textbf{Sarsa} & \textbf{Tree Backup} \\
-    \end{tabular}
-    \end{center}
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -223,23 +234,6 @@
   \end{figure}
 \end{frame}
 
-%-------------------------------------------------------------------------------
-\subsection{Off-policy learning}
-%-------------------------------------------------------------------------------
-
-\begin{frame}
-  \frametitle{$Q(\sigma)$ off-policy learning}
-  % TODO: Write more.
-  $Q(\sigma)$ importance sampling for off-policy learning combines the
-  off-policy learning ideas for base algorithms:
-  $$\rho_{t + 1}^{t + n} = \prod_{k = t + 1}^{\min{t + n - 1, T - 1}}
-    (\sigma_k \frac{\pi(A_k | S_k)}{\mu(A_k | S_k)} + 1 - \sigma_k)$$
-\end{frame}
-
-%-------------------------------------------------------------------------------
-\subsection{Algorithm details}
-%-------------------------------------------------------------------------------
-
 \begin{frame}
   \frametitle{$\sigma$ choosing strategies}
   \begin{itemize}
@@ -249,6 +243,27 @@
     \item Decreasing or increasing over $t$ (between $0$ and $1$)
   \end{itemize}
 \end{frame}
+
+%-------------------------------------------------------------------------------
+\subsection{Off-policy learning}
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+  \frametitle{$Q(\sigma)$ off-policy learning}
+  \begin{itemize}
+    \item Both base algorithms can be trained off-policy
+    \item $Q(\sigma)$ importance sampling for off-policy learning combines the
+    off-policy learning ideas for base algorithms
+  \end{itemize}
+  Learning policy $\pi$ while following $\mu$ can be achieved via introducing
+  appropriate importance ratio:
+  $$\rho_{t + 1}^{t + n} = \prod_{k = t + 1}^{\min{t + n - 1, T - 1}}
+    (\sigma_k \frac{\pi(A_k | S_k)}{\mu(A_k | S_k)} + 1 - \sigma_k)$$
+\end{frame}
+
+%-------------------------------------------------------------------------------
+\subsection{Algorithm details}
+%-------------------------------------------------------------------------------
 
 \begin{frame}
   \frametitle{Algorithm description}
@@ -282,39 +297,13 @@
 \end{frame}
 
 %-------------------------------------------------------------------------------
-\section{Experiments}
+\section{Comparison}
 %-------------------------------------------------------------------------------
 
 \begin{frame}
-  \frametitle{Stochastic Windy Gridworld Environment}
-  \begin{figure}
-    \centering
-    \begin{tabular}{ | c | c | c | c | c | c | c | c | c | c | }
-      \hline
-      o & o & o & o & o & o & o & o & o & o\\ \hline
-      o & o & o & o & o & o & o & o & o & o\\ \hline
-      o & o & o & o & o & o & o & o & o & o\\ \hline
-      S & o & o & o & o & o & o & G & o & o\\ \hline
-      o & o & o & o & o & o & o & o & o & o\\ \hline
-      o & o & o & o & o & o & o & o & o & o\\ \hline
-      o & o & o & o & o & o & o & o & o & o\\ \hline
-      0 & 0 & 0 & 1 & 1 & 1 & 2 & 2 & 1 & 0\\ \hline
-    \end{tabular}
-  \end{figure}
-  \begin{itemize}
-    \item Tabular navigation environment, agent is moved by upward "wind" by $x$
-      cells specified below each corresponding column at the end of its turn
-    \item Environment gives reward of $-1$ after each step
-    \item Agent returns to the closest valid state upon exiting the world
-    \item Stochastic modification: agent ends up in one of 8 adjacent states
-      with $p = 0.1$
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Comparing Sarsa, Tree Backup, $Q(0.5)$ and dynamic $\sigma$}
-  % TODO: Obtain plot using the implementations and Stochastic Windy Gridworld
-  % environment and insert here.
+  \frametitle{Comparing Sarsa, Tree Backup, $Q(0.5)$ and dynamic $\sigma$
+    performance}
+  % TODO: Put plots from the original paper in here.
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -323,14 +312,15 @@
 
 \begin{frame}
   \frametitle{Synopsis}
-  % TODO: Do a better job at summarizing the results: repeat what has been said
-  % today, what important results and intuition is obtained through the sequence
-  % of transitions, etc.
+  Today we
   \begin{itemize}
-    \item $n$-step algorithms are derived from MC and one-step TD methods
-    \item $Q(\sigma)$ unifies $n$-step Sarsa and Tree-backup
-    \item $Q(\sigma)|_{\sigma=0}$ is Tree Backup
-    \item $Q(\sigma)|_{\sigma=1}$ is $n$-step Sarsa
+    \item saw how $n$-step algorithms are derived from MC and one-step TD
+      methods
+    \item revised through Sarsa and Tree Backup
+    \item were introduced to the $Q(\sigma)$ algorithm in MDP setting
+    \item outlined the relation of presented algorithm to other $n$-step methods
+    \item gained some intuition about algorithm structure
+    \item compared $Q(\sigma)$ performance to its base algorithms
   \end{itemize}
 \end{frame}
 

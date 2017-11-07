@@ -10,12 +10,10 @@ def select_action(Q, state):
     return numpy.argmax(Q[state])
 
 
-def get_value(Q, state):
-    policy_probabilities = Q[state] / numpy.sum(Q[state])
-    return policy_probabilities * Q[state]
-
-
 def policy(Q, action, state):
+    '''
+    Returns probability of taking action from state given Q function.
+    '''
     policy_probabilities = Q[state] / numpy.sum(Q[state])
     return policy_probabilities[action]
 
