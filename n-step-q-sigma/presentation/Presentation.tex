@@ -159,9 +159,9 @@
   \begin{figure}
     \centering
     \includegraphics[height=0.6 \textheight]{sarsa_backup}
-    \caption{Backup schemes for Sarsa and Expected Sarsa with $n = 4$. Expected
-      Sarsa computes return expectation using all values of the valid outgoing
-      states on the last step.}
+    \caption{Backup schemes for Sarsa and Expected Sarsa with $n = 4$. The last
+      step of Expected Sarsa makes an update based on pure expectation rather
+      than on full sampling.}
   \end{figure}
 \end{frame}
 
@@ -187,7 +187,8 @@
     \centering
     \includegraphics[height=0.7 \textheight]{tree_backup}
     \caption{Tree Backup calculates the expected return of each step using
-      $\delta_t^{ES}$ at each timestep $t$}
+      $\delta_t^{ES}$ at each timestep $t$, i.e. using pure expectation rather
+      than full sampling}
   \end{figure}
 \end{frame}
 
