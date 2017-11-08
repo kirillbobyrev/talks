@@ -278,7 +278,7 @@
         \If{$S_{t  +1}$ is $S_T$}
           \State Store $\delta_t^{\sigma} = R - Q(S_t, A_t)$
         \Else
-          \State Select and store $A_{t + 1}$ according to $\pi(. | S_{t + 1}$
+          \State Select and store $A_{t + 1}$ according to $\pi(. | S_{t + 1})$
           \State Store $Q(S_{t + 1}, A_{t + 1})$, $\sigma_{t + 1}$,
             $\pi(A_{t + 1} | S_{t + 1})$
           \State Calculate and store $\delta_t^{\sigma}$
@@ -368,6 +368,7 @@
     \item outlined the relation of presented algorithm to other $n$-step methods
     \item gained some intuition about algorithm structure
     \item compared $Q(\sigma)$ performance to its base algorithms
+    \item thought about how the algorithm can be improved in the future
   \end{itemize}
 \end{frame}
 
@@ -391,7 +392,8 @@
     \newblock
     {\href{http://incompleteideas.net/sutton/book/the-book-2nd.html}{\em
       Reinforcement Learning: An Introduction}}.
-    \newblock MIT Press, Cambridge, MA, 19 Jun 2017 Draft.
+    \newblock MIT Press, Cambridge, MA, 5 November 2017, 2nd Edition Complete
+      Draft.
 
   \end{thebibliography}
 \end{frame}
