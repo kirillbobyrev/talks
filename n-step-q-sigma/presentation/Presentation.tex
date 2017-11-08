@@ -115,7 +115,9 @@
   \frametitle{Backups: From one-step TD to MC}
   \begin{figure}
     \centering
-    \includegraphics[height=0.7 \textheight]{one-step-to-multi-step}
+    \includegraphics[height=0.7 \textheight]{one_step_to_multi_step}
+    \caption{Backup schemes comparison: from $1$ step in TD(0) to $\infty$
+      steps in Monte Carlo methods}
   \end{figure}
 \end{frame}
 
@@ -154,10 +156,12 @@
 
 \begin{frame}
   \frametitle{$n$-step Sarsa and Expected Sarsa backup mechanisms}
-  % TODO: Add simple intuition about what happens at each backup step.
   \begin{figure}
     \centering
-    \includegraphics[height=0.7 \textheight]{sarsa-backup}
+    \includegraphics[height=0.6 \textheight]{sarsa_backup}
+    \caption{Backup schemes for Sarsa and Expected Sarsa with $n = 4$. Expected
+      Sarsa computes return expectation using all values of the valid outgoing
+      states on the last step.}
   \end{figure}
 \end{frame}
 
@@ -179,10 +183,11 @@
 
 \begin{frame}
   \frametitle{Tree Backup mechanism}
-  % TODO: Add simple intuition about what happens at each backup step.
   \begin{figure}
     \centering
-    \includegraphics[height=0.7 \textheight]{tree-backup}
+    \includegraphics[height=0.7 \textheight]{tree_backup}
+    \caption{Tree Backup calculates the expected return of each step using
+      $\delta_t^{ES}$ at each timestep $t$}
   \end{figure}
 \end{frame}
 
@@ -230,18 +235,11 @@
   \frametitle{Backup comparisons}
   \begin{figure}
     \centering
-    \includegraphics[width=0.7 \textwidth]{all-multi-step-backups}
+    \includegraphics[width=0.6 \textwidth]{all_multi_step_backups}
+    \caption{Backup mechanisms for the presented atomic multi-step algorithms
+      with $n = 4$. $Q(\sigma)$ combines backup techniques of the previous
+      algorithms}
   \end{figure}
-\end{frame}
-
-\begin{frame}
-  \frametitle{$\sigma$ choosing strategies}
-  \begin{itemize}
-    \item Constant $\sigma = C$
-    \item Altering $\sigma(t) = 1, 0, 1, 0, \ldots = [t \mod 2 = 0]$
-    \item Random $\sigma(t) \sim \mathcal{U}[0, 1]$
-    \item Decreasing or increasing over $t$ (between $0$ and $1$)
-  \end{itemize}
 \end{frame}
 
 %-------------------------------------------------------------------------------
@@ -303,7 +301,55 @@
 \begin{frame}
   \frametitle{Comparing Sarsa, Tree Backup, $Q(0.5)$ and dynamic $\sigma$
     performance}
-  % TODO: Put plots from the original paper in here.
+  \begin{figure}
+  \centering
+  \begin{minipage}{.48\textwidth}
+    \centering
+    \begin{figure}
+      \includegraphics[width=\linewidth]{windy_gridworld_plot.png}
+      \caption{Stochastic Windy Gridworld environment experiments. Results of
+        the algorithms are averaged after 100 returns. $Q(\sigma)$ performed the
+        best overall.}
+    \end{figure}
+  \end{minipage}
+  \begin{minipage}{.48\textwidth}
+    \centering
+    \begin{figure}
+      \includegraphics[width=\linewidth]{mountain_cliff_plot.png}
+      \caption{Mountain cliff results. The plot shows that dynamic $\sigma$
+        choosing strategy showed the best overall performance.}
+    \end{figure}
+  \end{minipage}
+  \end{figure}
+\end{frame}
+
+%-------------------------------------------------------------------------------
+\section{Future work}
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+  \frametitle{Room for improvements}
+  \begin{itemize}
+    \item Current definition of $Q(\sigma)$ is limited to the atomic multi-step
+      case without eligibility traces, but it can be extended to use
+      eligibility traces and compound backups
+    \item Performance of $Q(\sigma)$ was only evaluated on on-policy problems,
+      doing experiments with off-policy problems might be interesting
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Better $\sigma$ choosing}
+  A trivial example of such strategies:
+  \begin{itemize}
+    \item Constant $\sigma = C$
+    \item Altering $\sigma(t) = 1, 0, 1, 0, \ldots = [t \mod 2 = 0]$
+    \item Random $\sigma(t) \sim \mathcal{U}[0, 1]$
+    \item Decreasing or increasing over $t$ (between $0$ and $1$)
+  \end{itemize}
+  Other schemes for dynamically varying $\sigma$ could be investigated, for
+  example a function of state, recently observed rewards or some measure of the
+  learning progress.
 \end{frame}
 
 %-------------------------------------------------------------------------------
