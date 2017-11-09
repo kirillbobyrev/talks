@@ -51,7 +51,8 @@
     \item Uses $n$-step backup rule
     \item Generalizes a huge number of existing algorithms while subsuming them
       as special cases
-    \item Performs better given a reasonable choice of hyperparameter $\sigma$
+    \item Performs better than base algorithms given a reasonable choice of
+      hyperparameters
   \end{itemize}
 \end{frame}
 
@@ -147,6 +148,7 @@
     \item $\mu$ is exploratory policy, perhaps $\varepsilon$-greedy
   \end{itemize}
   Goal: learn value function for $\pi$ while following $\mu$
+
   Solution: use importance sampling ratio and modify update rule
   $$\rho_{t : t + n} = \prod_{k = t}^{\min{t + n, T - 1}}
     \frac{\pi(A_k | S_k)}{\mu(A_k | S_k)}$$
@@ -169,14 +171,26 @@
   \frametitle{Tree Backup: off-policy without Importance Sampling}
   Tree Backup is the multi-step generalization of Expected Sarsa:
   $$G_{t : t + 1} \overset{\cdot}{=} R_{t + 1} +
-    \gamma \sum_{a} \pi(a | S_{t + 1}) Q_t(S_{t + 1}, a) = \delta^{ES}_t
-    + Q_{t - 1}(S_{t + 1}, a)$$
+      \gamma \sum_{a} \pi(a | S_{t + 1}) Q_t(S_{t + 1}, a) = \delta^{ES}_t
+        + Q_{t - 1}(S_{t + 1}, a)$$
   Hence $n$-step return of Tree Backup is a sum of TD errors:
-  % TODO: Check that the following error is indeed \delta^ES.
-  $$G_{t : t + n} \overset{\cdot}{=} Q_{t -1}(S_t, A_t) +
-    \sum_{k = t}^{\min{t + n - 1, T - 1}} \delta_k^{ES} \prod_{i = t + 1}^k
-    \gamma \pi(A_i | S_i)$$
-  Taking update rule from $n$-step Sarsa:
+  \begin{align*}
+    G_{t : t + n}
+      &=
+      R_{t + 1} + \gamma \sum_{a \neq A_{t + 1}} \pi(a | S_{t + 1})
+        Q_t(S_{t + 1}, a) + \gamma \pi(A_{t + 1} | S_{t + 1}) G_{t + 1 : t + n}
+      \\
+      &= \delta_t^{ES} + Q_{t - 1} (S_t, A_t) - \gamma
+        \pi(A_{t + 1} | S_{t + 1}) Q_t(S_{t + 1}, A_{t + 1}) +
+      \\
+      &+ \gamma \pi(A_{t + 1} | S_{t + 1}) G_{t + 1 : t + n}
+      \\
+      &= Q_{t -1}(S_t, A_t) +
+      \sum_{k = t}^{\min{t + n - 1, T - 1}} \delta_k^{ES} \prod_{i = t + 1}^k +
+      \gamma \pi(A_i | S_i)
+  \end{align*}
+
+  Tree Backup is obtained after taking update rule from $n$-step Sarsa:
   $$Q_{t + n}(S_t, A_t) \overset{\cdot}{=} Q_{t + n - 1}(S_t, A_t) +
     \alpha[G_{t : t + n} - Q_{t + n -1}(S_t, A_t)]$$
 \end{frame}
@@ -239,7 +253,8 @@
     \includegraphics[width=0.6 \textwidth]{all_multi_step_backups}
     \caption{Backup mechanisms for the presented atomic multi-step algorithms
       with $n = 4$. $Q(\sigma)$ combines backup techniques of the previous
-      algorithms}
+      algorithms. $\rho$ indicates that corresponding transition requires
+      importance sampling in off-policy learning.}
   \end{figure}
 \end{frame}
 
@@ -256,7 +271,7 @@
   \end{itemize}
   Learning policy $\pi$ while following $\mu$ can be achieved via introducing
   appropriate importance ratio:
-  $$\rho_{t + 1}^{t + n} = \prod_{k = t + 1}^{\min{t + n - 1, T - 1}}
+  $$\rho_{t + 1 : t + n} = \prod_{k = t + 1}^{\min{t + n - 1, T - 1}}
     (\sigma_k \frac{\pi(A_k | S_k)}{\mu(A_k | S_k)} + 1 - \sigma_k)$$
 \end{frame}
 
