@@ -7,25 +7,18 @@ import numpy
 import matplotlib
 
 
-class EpsilonGreedyQPolicy(object):
-    def __init__(self, states_count, actions_count, exploration_rate=0.1):
-        assert (0 < exploration_rate and exploration_rate <= 1)
+class QPolicy(object):
+    def __init__(self, states_count, actions_count):
         self.states_count = states_count
         self.actions_count = actions_count
-        # self.Q = numpy.random.rand(states_count, actions_count)
-        self.Q = numpy.ones((states_count, actions_count))
-        self.exploration_rate = exploration_rate
+        self.Q = numpy.random.rand(states_count, actions_count)
 
     def get_probability(self, action, state):
         probabilities = numpy.zeros(self.actions_count)
         probabilities[numpy.argmax(self.Q[state])] = 1
-        probabilities += self.exploration_rate
-        probabilities /= probabilities.sum()
         return probabilities[action]
 
     def sample_action(self, state):
-        if numpy.random.rand() <= self.exploration_rate:
-            return numpy.random.choice(range(self.actions_count))
         return numpy.argmax(self.Q[state])
 
     def getQ(self, state, action):
@@ -36,24 +29,17 @@ class EpsilonGreedyQPolicy(object):
 
 
 def Q_sigma(environment,
-            episodes_count=10000,
-            steps_count=1,
-            sigma=1,
-            discount_factor=0.99,
-            exploration_rate=0.1,
-            learning_rate=0.4,
-            random_seed=42):
+            episodes_count=50000,
+            steps_count=4,
+            sigma=0.5,
+            discount_factor=0.9,
+            learning_rate=0.4):
     assert (0 < learning_rate and learning_rate <= 1)
-    assert (0 < exploration_rate and exploration_rate <= 1)
-    numpy.random.seed(random_seed)
-    # environment.seed(random_seed)
-    policy = EpsilonGreedyQPolicy(environment.observation_space.n,
-                                  environment.action_space.n, exploration_rate)
-
-    lengths = []
+    policy = QPolicy(environment.observation_space.n,
+                     environment.action_space.n)
     total_rewards = []
+
     for episode in range(episodes_count):
-        # print('Episode {}'.format(episode))
         states = [environment.reset()]
         actions = [policy.sample_action(states[0])]
         deltas = []
@@ -66,11 +52,11 @@ def Q_sigma(environment,
         t = 0
         T = numpy.infty
         while True:
-            # print('State: {}'.format(states[t]))
-            # print('Action: {}'.format(actions[t]))
-            # print('Q[{}][{}] = {}'.format(states[t], actions[t],
-            #                              policy.Q[states[t]][actions[t]]))
             if t < T:
+                '''
+                If the episode is not finished, make an action, observe a state
+                and sample next action.
+                '''
                 current_state, reward, done, _ = \
                         environment.step(actions[t])
                 states.append(current_state)
@@ -81,7 +67,7 @@ def Q_sigma(environment,
                     delta = reward - Q[t]
                     deltas.append(delta)
                 else:
-                    actions.append(policy.sample_action(states[t]))
+                    actions.append(policy.sample_action(states[t + 1]))
                     Q.append(policy.getQ(states[t + 1], actions[t + 1]))
                     # Calculate \delta_t and store it.
                     pure_expectation = 0
@@ -102,7 +88,7 @@ def Q_sigma(environment,
                 '''
                 Z = 1
                 G = Q[tau]
-                for k in range(tau, min(tau + steps_count, T - 1)):
+                for k in range(tau, min(tau + steps_count, T)):
                     G = G + Z * deltas[k]
                     Z = discount_factor * Z * ((1 - sigma) * pi[k] + sigma)
                 updated_value = Q[tau] + learning_rate * (G - Q[tau])
@@ -115,8 +101,10 @@ def Q_sigma(environment,
             if tau == T - 1:
                 break
             t += 1
-        lengths.append(T)
         total_rewards.append(total_reward)
+        if episode % 500 == 0:
+            print('Success rate: ' + str(numpy.sum(total_rewards) / 500))
+            total_rewards = []
     '''
     Plot rewards.
     '''

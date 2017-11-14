@@ -13,7 +13,7 @@ import gym
 
 def main():
     environment = gym.make('FrozenLake-v0') # StochasticWindyGridworld(0)
-    Q_sigma(environment)#, episodes_count=1000, steps_count=1, sigma=1)
+    Q_sigma(environment)
 
 
 if __name__ == '__main__':
