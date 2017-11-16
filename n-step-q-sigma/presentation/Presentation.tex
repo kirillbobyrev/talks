@@ -61,6 +61,15 @@
 %-------------------------------------------------------------------------------
 
 \begin{frame}
+  \frametitle{Classic RL algorithms landscape}
+  \begin{figure}
+    \centering
+    \includegraphics[height=0.7 \textheight]{algorithms_landscape}
+    \caption{Four families of RL algorithms}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
   \frametitle{Monte Carlo methods}
   \begin{itemize}
     \item Sample many episodes
@@ -287,16 +296,17 @@
     \State Initialize $S_0 \neq S_T$; select $A_0$ according to
       $\pi(. | S_0)$
     \State Store $S_0$, $A_0$ and $Q(S_0, A_0)$
-    \For{$t\gets 0, T + n - 1$}
+    \For{$t \gets 0, T + n - 1$}
       \If{$t < T$}
         \State Take action $A_t$, get R, observe and store $S_{t + 1}$
         \If{$S_{t  +1}$ is $S_T$}
           \State Store $\delta_t^{\sigma} = R - Q(S_t, A_t)$
         \Else
+          \State Calculate and store $\delta_t^{\sigma}$
           \State Select and store $A_{t + 1}$ according to $\pi(. | S_{t + 1})$
           \State Store $Q(S_{t + 1}, A_{t + 1})$, $\sigma_{t + 1}$,
             $\pi(A_{t + 1} | S_{t + 1})$
-          \State Calculate and store $\delta_t^{\sigma}$
+          \State Store $\pi(A_{t + 1}, S_{t + 1})$ as $\pi_{t + 1}$
         \EndIf
       \EndIf
       \If{$t \geq n$}
@@ -309,6 +319,23 @@
   \end{minipage}
   }
 \end{frame}
+
+%-------------------------------------------------------------------------------
+\subsection{$G_t^{(n)}$ calculation}
+%-------------------------------------------------------------------------------
+
+\begin{frame}
+  \frametitle{Calculate $G_t^{(n)}$}
+  \begin{algorithmic}[1]
+    \State $Z = 1$
+    \State $G = Q_t$
+    \For{$k = \tau, \ldots, \min{(\tau + n - 1, T - 1)}$}
+      \State $G = G + Z \delta_k$
+      \State $Z = \gamma Z [(1 - \sigma_{k + 1}) \pi_{k + 1} + \sigma_{k + 1}]$
+    \EndFor
+  \end{algorithmic}
+\end{frame}
+
 
 %-------------------------------------------------------------------------------
 \section{Comparison}
