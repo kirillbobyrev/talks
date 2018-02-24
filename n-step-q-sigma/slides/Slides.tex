@@ -87,7 +87,7 @@
     \item Uses bootstrapping for updates
     \item Sample many steps instead of methods
     \item One-step TD backup: $V(S_t) \leftarrow V(S_t) +
-      \alpha[R_t - \gamma V(S_t)]$
+      \alpha[R_{t+1} - \gamma V(S_{t+1}) - V(S_t)]$
   \end{itemize}
 \end{frame}
 
